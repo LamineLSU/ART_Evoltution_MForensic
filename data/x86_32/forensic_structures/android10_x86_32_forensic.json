@@ -1,0 +1,689 @@
+// 34 critical structures essential for Android 10 memory forensics operations (thread enumeration, heap analysis, and object recovery) on x86_32 architecture
+{
+    "version": "android10",
+    "architecture": "x86_32",
+    "classes": {
+        "Monitor": {
+            "size": "0x58",
+            "members": {
+                "monitor_lock_": 0,
+                "monitor_contenders_": 32,
+                "num_waiters_": 48,
+                "owner_": 52,
+                "lock_count_": 56,
+                "obj_": 60,
+                "wait_set_": 64,
+                "wake_set_": 68,
+                "hash_code_": 72,
+                "locking_method_": 76,
+                "locking_dex_pc_": 80,
+                "monitor_id_": 84
+            }
+        },
+        "Thread": {
+            "size": "0xd90",
+            "members": {
+                "tls32_": 0,
+                "tls64_": 88,
+                "tlsPtr_": 152,
+                "interpreter_cache_": 1376,
+                "wait_mutex_": 3424,
+                "wait_cond_": 3428,
+                "wait_monitor_": 3432,
+                "debug_disallow_read_barrier_": 3436,
+                "poison_object_cookie_": 3440,
+                "checkpoint_overflow_": 3444,
+                "custom_tls_": 3456,
+                "is_runtime_thread_": 3468
+            }
+        },
+        "tls_32bit_sized_values": {
+            "size": "0x54",
+            "members": {
+                "state_and_flags": 0,
+                "suspend_count": 4,
+                "debug_suspend_count": 8,
+                "thin_lock_thread_id": 12,
+                "tid": 16,
+                "daemon": 20,
+                "throwing_OutOfMemoryError": 24,
+                "no_thread_suspension": 28,
+                "thread_exit_check_count": 32,
+                "handling_signal_": 36,
+                "is_transitioning_to_runnable": 40,
+                "ready_for_debug_invoke": 44,
+                "debug_method_entry_": 48,
+                "is_gc_marking": 52,
+                "interrupted": 56,
+                "park_state_": 60,
+                "weak_ref_access_enabled": 64,
+                "disable_thread_flip_count": 68,
+                "user_code_suspend_count": 72,
+                "force_interpreter_count": 76,
+                "use_mterp": 80
+            }
+        },
+        "tls_64bit_sized_values": {
+            "size": "0x40",
+            "members": {
+                "trace_clock_base": 0,
+                "stats": 8
+            }
+        },
+        "tls_ptr_sized_values": {
+            "size": "0x4bc",
+            "members": {
+                "card_table": 0,
+                "exception": 4,
+                "stack_end": 8,
+                "managed_stack": 12,
+                "suspend_trigger": 24,
+                "jni_env": 28,
+                "tmp_jni_env": 32,
+                "self": 36,
+                "opeer": 40,
+                "jpeer": 44,
+                "stack_begin": 48,
+                "stack_size": 52,
+                "deps_or_stack_trace_sample": 56,
+                "wait_next": 60,
+                "monitor_enter_object": 64,
+                "top_handle_scope": 68,
+                "class_loader_override": 72,
+                "long_jump_context": 76,
+                "instrumentation_stack": 80,
+                "debug_invoke_req": 84,
+                "single_step_control": 88,
+                "stacked_shadow_frame_record": 92,
+                "deoptimization_context_stack": 96,
+                "frame_id_to_shadow_frame": 100,
+                "name": 104,
+                "pthread_self": 108,
+                "last_no_thread_suspension_cause": 112,
+                "checkpoint_function": 116,
+                "active_suspend_barriers": 120,
+                "thread_local_start": 132,
+                "thread_local_pos": 136,
+                "thread_local_end": 140,
+                "thread_local_limit": 144,
+                "thread_local_objects": 148,
+                "jni_entrypoints": 152,
+                "quick_entrypoints": 156,
+                "mterp_current_ibase": 820,
+                "rosalloc_runs": 824,
+                "thread_local_alloc_stack_top": 888,
+                "thread_local_alloc_stack_end": 892,
+                "held_mutexes": 896,
+                "flip_function": 1196,
+                "method_verifier": 1200,
+                "thread_local_mark_stack": 1204,
+                "async_exception": 1208
+            }
+        },
+        "CompressedReference<art::mirror::Object>": {
+            "size": "0x4",
+            "members": {}
+        },
+        "ObjectReference<false, art::mirror::Object>": {
+            "size": "0x4",
+            "members": {
+                "reference_": 0
+            }
+        },
+        "Object": {
+            "size": "0x8",
+            "members": {
+                "klass_": 0,
+                "monitor_": 4
+            }
+        },
+        "Class": {
+            "size": "0x78",
+            "members": {
+                "class_loader_": 8,
+                "component_type_": 12,
+                "dex_cache_": 16,
+                "ext_data_": 20,
+                "iftable_": 24,
+                "name_": 28,
+                "super_class_": 32,
+                "vtable_": 36,
+                "ifields_": 40,
+                "methods_": 48,
+                "sfields_": 56,
+                "access_flags_": 64,
+                "class_flags_": 68,
+                "class_size_": 72,
+                "clinit_thread_id_": 76,
+                "dex_class_def_idx_": 80,
+                "dex_type_idx_": 84,
+                "num_reference_instance_fields_": 88,
+                "num_reference_static_fields_": 92,
+                "object_size_": 96,
+                "object_size_alloc_fast_path_": 100,
+                "primitive_type_": 104,
+                "reference_instance_offsets_": 108,
+                "status_": 112,
+                "copied_methods_offset_": 116,
+                "virtual_methods_offset_": 118
+            }
+        },
+        "DexCache": {
+            "size": "0x68",
+            "members": {
+                "location_": 8,
+                "num_preresolved_strings_": 12,
+                "dex_file_": 16,
+                "preresolved_strings_": 24,
+                "resolved_call_sites_": 32,
+                "resolved_fields_": 40,
+                "resolved_method_types_": 48,
+                "resolved_methods_": 56,
+                "resolved_types_": 64,
+                "strings_": 72,
+                "num_resolved_call_sites_": 80,
+                "num_resolved_fields_": 84,
+                "num_resolved_method_types_": 88,
+                "num_resolved_methods_": 92,
+                "num_resolved_types_": 96,
+                "num_strings_": 100
+            }
+        },
+        "String": {
+            "size": "0x10",
+            "members": {
+                "count_": 8,
+                "hash_code_": 12,
+                "UnNamed": 16
+            }
+        },
+        "ArtMethod": {
+            "size": "0x1c",
+            "members": {
+                "declaring_class_": 0,
+                "access_flags_": 4,
+                "dex_code_item_offset_": 8,
+                "dex_method_index_": 12,
+                "method_index_": 16,
+                "UnNamed": 18,
+                "ptr_sized_fields_": 20
+            }
+        },
+        "PtrSizedFields": {
+            "size": "0x8",
+            "members": {
+                "data_": 0,
+                "entry_point_from_quick_compiled_code_": 4
+            }
+        },
+        "ProtoId": {
+            "size": "0xc",
+            "members": {
+                "shorty_idx_": 0,
+                "return_type_idx_": 4,
+                "pad_": 6,
+                "parameters_off_": 8
+            }
+        },
+        "ClassDef": {
+            "size": "0x20",
+            "members": {
+                "class_idx_": 0,
+                "pad1_": 2,
+                "access_flags_": 4,
+                "superclass_idx_": 8,
+                "pad2_": 10,
+                "interfaces_off_": 12,
+                "source_file_idx_": 16,
+                "annotations_off_": 20,
+                "class_data_off_": 24,
+                "static_values_off_": 28
+            }
+        },
+        "ArtField": {
+            "size": "0x10",
+            "members": {
+                "declaring_class_": 0,
+                "access_flags_": 4,
+                "field_dex_idx_": 8,
+                "offset_": 12
+            }
+        },
+        "RegionSpace": {
+            "size": "0xd0",
+            "members": {
+                "region_lock_": 88,
+                "use_generational_cc_": 120,
+                "time_": 124,
+                "num_regions_": 128,
+                "num_non_free_regions_": 132,
+                "num_evac_regions_": 136,
+                "max_peak_num_non_free_regions_": 140,
+                "regions_": 144,
+                "non_free_region_index_limit_": 148,
+                "current_region_": 152,
+                "evac_region_": 156,
+                "full_region_": 160,
+                "cyclic_alloc_region_index_": 196,
+                "mark_bitmap_": 200
+            }
+        },
+        "Region": {
+            "size": "0x24",
+            "members": {
+                "idx_": 0,
+                "live_bytes_": 4,
+                "begin_": 8,
+                "thread_": 12,
+                "top_": 16,
+                "end_": 20,
+                "objects_allocated_": 24,
+                "alloc_time_": 28,
+                "is_newly_allocated_": 32,
+                "is_a_tlab_": 33,
+                "state_": 34,
+                "type_": 35
+            }
+        },
+        "ContinuousMemMapAllocSpace": {
+            "size": "0x58",
+            "members": {
+                "live_bitmap_": 76,
+                "mark_bitmap_": 80,
+                "temp_bitmap_": 84
+            }
+        },
+        "MemMapSpace": {
+            "size": "0x48",
+            "members": {
+                "mem_map_": 32
+            }
+        },
+        "Heap": {
+            "size": "0x3a0",
+            "members": {
+                "continuous_spaces_": 0,
+                "discontinuous_spaces_": 12,
+                "alloc_spaces_": 24,
+                "non_moving_space_": 36,
+                "rosalloc_space_": 40,
+                "dlmalloc_space_": 44,
+                "main_space_": 48,
+                "large_object_space_": 52,
+                "card_table_": 56,
+                "rb_table_": 60,
+                "mod_union_tables_": 64,
+                "remembered_sets_": 76,
+                "collector_type_": 88,
+                "foreground_collector_type_": 92,
+                "background_collector_type_": 96,
+                "desired_collector_type_": 100,
+                "pending_task_lock_": 104,
+                "parallel_gc_threads_": 108,
+                "conc_gc_threads_": 112,
+                "low_memory_mode_": 116,
+                "long_pause_log_threshold_": 120,
+                "long_gc_log_threshold_": 124,
+                "process_cpu_start_time_ns_": 128,
+                "pre_gc_last_process_cpu_time_ns_": 136,
+                "post_gc_last_process_cpu_time_ns_": 144,
+                "pre_gc_weighted_allocated_bytes_": 152,
+                "post_gc_weighted_allocated_bytes_": 160,
+                "ignore_target_footprint_": 168,
+                "zygote_creation_lock_": 176,
+                "zygote_space_": 208,
+                "large_object_threshold_": 212,
+                "gc_complete_lock_": 216,
+                "gc_complete_cond_": 220,
+                "thread_flip_lock_": 224,
+                "thread_flip_cond_": 228,
+                "disable_thread_flip_count_": 232,
+                "thread_flip_running_": 236,
+                "reference_processor_": 240,
+                "task_processor_": 244,
+                "collector_type_running_": 248,
+                "last_gc_cause_": 252,
+                "thread_running_gc_": 256,
+                "last_gc_type_": 260,
+                "next_gc_type_": 264,
+                "capacity_": 268,
+                "growth_limit_": 272,
+                "target_footprint_": 276,
+                "concurrent_start_bytes_": 280,
+                "total_bytes_freed_ever_": 284,
+                "total_objects_freed_ever_": 292,
+                "num_bytes_allocated_": 300,
+                "native_bytes_registered_": 304,
+                "old_native_bytes_allocated_": 308,
+                "native_objects_notified_": 312,
+                "num_bytes_freed_revoke_": 316,
+                "current_gc_iteration_": 320,
+                "verify_missing_card_marks_": 412,
+                "verify_system_weaks_": 413,
+                "verify_pre_gc_heap_": 414,
+                "verify_pre_sweeping_heap_": 415,
+                "verify_post_gc_heap_": 416,
+                "verify_mod_union_table_": 417,
+                "verify_pre_gc_rosalloc_": 418,
+                "verify_pre_sweeping_rosalloc_": 419,
+                "verify_post_gc_rosalloc_": 420,
+                "gc_stress_mode_": 421,
+                "thread_pool_": 424,
+                "live_bitmap_": 428,
+                "mark_bitmap_": 432,
+                "mark_stack_": 436,
+                "max_allocation_stack_size_": 440,
+                "allocation_stack_": 444,
+                "live_stack_": 448,
+                "current_allocator_": 452,
+                "current_non_moving_allocator_": 456,
+                "gc_plan_": 460,
+                "bump_pointer_space_": 472,
+                "temp_space_": 476,
+                "region_space_": 480,
+                "min_free_": 484,
+                "max_free_": 488,
+                "target_utilization_": 492,
+                "foreground_heap_growth_multiplier_": 500,
+                "total_wait_time_": 508,
+                "verify_object_mode_": 516,
+                "disable_moving_gc_count_": 520,
+                "garbage_collectors_": 524,
+                "semi_space_collector_": 536,
+                "active_concurrent_copying_collector_": 540,
+                "young_concurrent_copying_collector_": 544,
+                "concurrent_copying_collector_": 548,
+                "is_running_on_memory_tool_": 552,
+                "use_tlab_": 553,
+                "main_space_backup_": 556,
+                "min_interval_homogeneous_space_compaction_by_oom_": 560,
+                "last_time_homogeneous_space_compaction_by_oom_": 568,
+                "count_delayed_oom_": 576,
+                "count_requested_homogeneous_space_compaction_": 580,
+                "count_ignored_homogeneous_space_compaction_": 584,
+                "count_performed_homogeneous_space_compaction_": 588,
+                "concurrent_gc_pending_": 592,
+                "pending_collector_transition_": 596,
+                "pending_heap_trim_": 600,
+                "use_homogeneous_space_compaction_for_oom_": 604,
+                "use_generational_cc_": 605,
+                "running_collection_is_blocking_": 606,
+                "blocking_gc_count_": 608,
+                "blocking_gc_time_": 616,
+                "last_update_time_gc_count_rate_histograms_": 624,
+                "gc_count_last_window_": 632,
+                "blocking_gc_count_last_window_": 640,
+                "gc_count_rate_histogram_": 648,
+                "blocking_gc_count_rate_histogram_": 748,
+                "alloc_tracking_enabled_": 848,
+                "allocation_records_": 852,
+                "alloc_record_depth_": 856,
+                "backtrace_lock_": 860,
+                "seen_backtrace_count_": 864,
+                "unique_backtrace_count_": 872,
+                "seen_backtraces_": 880,
+                "gc_disabled_for_shutdown_": 900,
+                "dump_region_info_before_gc_": 901,
+                "dump_region_info_after_gc_": 902,
+                "boot_image_spaces_": 904,
+                "alloc_listener_": 916,
+                "gc_pause_listener_": 920,
+                "verification_": 924
+            }
+        },
+        "GcRoot<art::mirror::Object>": {
+            "size": "0x4",
+            "members": {
+                "root_": 0
+            }
+        },
+        "Runtime": {
+            "size": "0x36c",
+            "members": {
+                "callee_save_methods_": 0,
+                "pre_allocated_OutOfMemoryError_when_throwing_exception_": 48,
+                "pre_allocated_OutOfMemoryError_when_throwing_oome_": 52,
+                "pre_allocated_OutOfMemoryError_when_handling_stack_overflow_": 56,
+                "pre_allocated_NoClassDefFoundError_": 60,
+                "resolution_method_": 64,
+                "imt_conflict_method_": 68,
+                "imt_unimplemented_method_": 72,
+                "sentinel_": 76,
+                "instruction_set_": 80,
+                "compiler_callbacks_": 84,
+                "is_zygote_": 88,
+                "is_system_server_": 89,
+                "must_relocate_": 90,
+                "is_concurrent_gc_enabled_": 91,
+                "is_explicit_gc_disabled_": 92,
+                "image_dex2oat_enabled_": 93,
+                "compiler_executable_": 96,
+                "compiler_options_": 108,
+                "image_compiler_options_": 120,
+                "image_location_": 132,
+                "is_using_apex_boot_image_location_": 144,
+                "boot_class_path_": 148,
+                "boot_class_path_locations_": 160,
+                "class_path_string_": 172,
+                "properties_": 184,
+                "agent_specs_": 196,
+                "agents_": 208,
+                "plugins_": 220,
+                "default_stack_size_": 232,
+                "finalizer_timeout_ms_": 236,
+                "heap_": 240,
+                "jit_arena_pool_": 244,
+                "arena_pool_": 248,
+                "low_4gb_arena_pool_": 252,
+                "linear_alloc_": 256,
+                "max_spins_before_thin_lock_inflation_": 260,
+                "monitor_list_": 264,
+                "monitor_pool_": 268,
+                "thread_list_": 272,
+                "intern_table_": 276,
+                "class_linker_": 280,
+                "signal_catcher_": 284,
+                "java_vm_": 288,
+                "jit_": 292,
+                "jit_code_cache_": 296,
+                "jit_options_": 300,
+                "thread_pool_": 304,
+                "thread_pool_ref_count_": 308,
+                "fault_message_": 312,
+                "threads_being_born_": 316,
+                "shutdown_cond_": 320,
+                "shutting_down_": 324,
+                "shutting_down_started_": 325,
+                "started_": 326,
+                "finished_starting_": 327,
+                "vfprintf_": 328,
+                "exit_": 332,
+                "abort_": 336,
+                "stats_enabled_": 340,
+                "stats_": 344,
+                "is_running_on_memory_tool_": 400,
+                "trace_config_": 404,
+                "instrumentation_": 408,
+                "main_thread_group_": 596,
+                "system_thread_group_": 600,
+                "system_class_loader_": 604,
+                "dump_gc_performance_on_shutdown_": 608,
+                "preinitialization_transactions_": 612,
+                "verify_": 624,
+                "allow_dex_file_fallback_": 625,
+                "cpu_abilist_": 628,
+                "target_sdk_version_": 640,
+                "implicit_null_checks_": 644,
+                "implicit_so_checks_": 645,
+                "implicit_suspend_checks_": 646,
+                "no_sig_chain_": 647,
+                "force_native_bridge_": 648,
+                "is_native_bridge_loaded_": 649,
+                "is_native_debuggable_": 650,
+                "async_exceptions_thrown_": 651,
+                "non_standard_exits_enabled_": 652,
+                "is_java_debuggable_": 653,
+                "zygote_max_failed_boots_": 656,
+                "experimental_flags_": 660,
+                "fingerprint_": 664,
+                "oat_file_manager_": 676,
+                "is_low_memory_mode_": 680,
+                "madvise_random_access_": 681,
+                "safe_mode_": 682,
+                "hidden_api_policy_": 684,
+                "core_platform_api_policy_": 688,
+                "hidden_api_exemptions_": 692,
+                "dedupe_hidden_api_warnings_": 704,
+                "hidden_api_access_event_log_rate_": 708,
+                "process_package_name_": 712,
+                "process_data_directory_": 724,
+                "dump_native_stack_on_sig_quit_": 736,
+                "pruned_dalvik_cache_": 737,
+                "process_state_": 740,
+                "zygote_no_threads_": 744,
+                "jdwp_options_": 748,
+                "jdwp_provider_": 760,
+                "env_snapshot_": 764,
+                "system_weak_holders_": 780,
+                "callbacks_": 792,
+                "deoptimization_counts_": 796,
+                "protected_fault_page_": 828,
+                "verifier_logging_threshold_ms_": 868,
+                "load_app_image_startup_cache_": 872,
+                "startup_completed_": 873,
+                "image_space_loading_order_": 874
+            }
+        },
+        "FieldId": {
+            "size": "0x8",
+            "members": {
+                "class_idx_": 0,
+                "type_idx_": 2,
+                "name_idx_": 4
+            }
+        },
+        "IRTSegmentState": {
+            "size": "0x4",
+            "members": {
+                "top_index": 0
+            }
+        },
+        "IndirectReferenceTable": {
+            "size": "0x44",
+            "members": {
+                "segment_state_": 0,
+                "table_mem_map_": 4,
+                "table_": 44,
+                "kind_": 48,
+                "max_entries_": 52,
+                "current_num_holes_": 56,
+                "last_known_previous_state_": 60,
+                "resizable_": 64
+            }
+        },
+        "IrtEntry": {
+            "size": "0x10",
+            "members": {
+                "serial_": 0,
+                "references_": 4
+            }
+        },
+        "ThreadList": {
+            "size": "0x208c",
+            "members": {
+                "allocated_ids_": 0,
+                "list_": 8192,
+                "suspend_all_count_": 8204,
+                "debug_suspend_all_count_": 8208,
+                "unregistering_count_": 8212,
+                "suspend_all_historam_": 8216,
+                "long_suspend_": 8316,
+                "shut_down_": 8317,
+                "thread_suspend_timeout_ns_": 8320,
+                "empty_checkpoint_barrier_": 8328
+            }
+        },
+        "JavaVMExt": {
+            "size": "0xd8",
+            "members": {
+                "runtime_": 4,
+                "check_jni_abort_hook_": 8,
+                "check_jni_abort_hook_data_": 12,
+                "check_jni_": 16,
+                "force_copy_": 17,
+                "tracing_enabled_": 18,
+                "trace_": 20,
+                "globals_": 32,
+                "libraries_": 100,
+                "unchecked_functions_": 104,
+                "weak_globals_": 108,
+                "allow_accessing_weak_globals_": 176,
+                "weak_globals_add_condition_": 180,
+                "env_hooks_": 196,
+                "enable_allocation_tracking_delta_": 208,
+                "allocation_tracking_enabled_": 212,
+                "old_allocation_tracking_state_": 213
+            }
+        },
+        "ContinuousSpace": {
+            "size": "0x20",
+            "members": {
+                "begin_": 20,
+                "end_": 24,
+                "limit_": 28
+            }
+        },
+        "AllocSpace": {
+            "size": "0x4",
+            "members": {
+                "_vptr$AllocSpace": 0
+            }
+        },
+        "ImageSpace": {
+            "size": "0x60",
+            "members": {
+                "live_bitmap_": 72,
+                "oat_file_": 76,
+                "oat_file_non_owned_": 80,
+                "image_location_": 84
+            }
+        },
+        "MallocSpace": {
+            "size": "0x90",
+            "members": {
+                "recent_freed_objects_": 88,
+                "recent_free_pos_": 88,
+                "lock_": 96,
+                "growth_limit_": 128,
+                "can_move_objects_": 132,
+                "starting_size_": 136,
+                "initial_size_": 140
+            }
+        },
+        "OatFile": {
+            "size": "0x98",
+            "members": {
+                "_vptr$OatFile": 0,
+                "location_": 4,
+                "vdex_": 16,
+                "begin_": 20,
+                "end_": 24,
+                "data_bimg_rel_ro_begin_": 28,
+                "data_bimg_rel_ro_end_": 32,
+                "bss_begin_": 36,
+                "bss_end_": 40,
+                "bss_methods_": 44,
+                "bss_roots_": 48,
+                "is_executable_": 52,
+                "vdex_begin_": 56,
+                "vdex_end_": 60,
+                "oat_dex_files_storage_": 64,
+                "oat_dex_files_": 76,
+                "secondary_lookup_lock_": 88,
+                "secondary_oat_dex_files_": 120,
+                "string_cache_": 132,
+                "uncompressed_dex_files_": 144
+            }
+        }
+    }
+}
